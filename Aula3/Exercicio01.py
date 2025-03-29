@@ -11,18 +11,27 @@ def quicksort(arr):
     left = [x for x in arr[:-1] if x <= pivot]  # Elementos menores ou iguais ao pivô
     right = [x for x in arr[:-1] if x > pivot]  # Elementos maiores que o pivô
 
-    left_list = []
-    right_list = []
+    left_sort = []
+    right_sort = []
 
-    thread1 = threading.Thread(target=lambda: left_list.extend(quicksort(left)))
-    thread2 = threading.Thread(target=lambda: right_list.extend(quicksort(right)))
+    def ordernar_left():
+        nonlocal left_sort
+        left_sort.extend(quicksort(left))
 
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    def ordernar_right():
+        nonlocal right_sort
+        right_sort.extend(quicksort(right))
 
-    return quicksort(left) + [pivot] + quicksort(right)
+    left_thread = threading.Thread(target = ordernar_left)
+    right_thread = threading.Thread(target = ordernar_right)
+
+    left_thread.start()
+    right_thread.start()
+
+    left_thread.join()
+    right_thread.join()
+
+    return left_sort + [pivot] + right_sort
 
 # Função para gerar números aleatórios
 
